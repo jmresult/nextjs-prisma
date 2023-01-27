@@ -52,7 +52,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         if (req.method.toUpperCase() === "POST") {
             res.json({type: "error", msg: 'forbidden'})
         } else {
-            res.status(401)
+            res.status(401).send("401 Unauthorized")
         }
     }
 }
