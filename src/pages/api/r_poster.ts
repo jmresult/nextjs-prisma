@@ -32,7 +32,12 @@ String.prototype._replace = function (searchValue: string | RegExp | [], replace
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     const contentType = req.headers['content-type'] ? req.headers['content-type'] : "";
     if (req.method.toUpperCase() === "POST" && (contentType.includes('x-www-form-urlencoded') || contentType.includes('application/json'))) {
-        res.setHeader("Access-Control-Allow-Origin", "*")
+        //res.setHeader("Access-Control-Allow-Origin", "*")
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header(
+            "Access-Control-Allow-Headers",
+            "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+        );
         let body: RequestQuery = req.body
         const tools = new Tools(body)
         if (body.data) body = JSON.parse(tools.base64Decode(body.data))
