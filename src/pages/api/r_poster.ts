@@ -29,88 +29,26 @@ String.prototype._replace = function (searchValue: string | RegExp | [], replace
 }
 
 
-
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     const contentType = req.headers['content-type'] ? req.headers['content-type'] : "";
-    if (req.method.toUpperCase() === "POST" && (contentType.includes('x-www-form-urlencoded') || contentType.includes('application/json') )) {
+    if (req.method.toUpperCase() === "POST" && (contentType.includes('x-www-form-urlencoded') || contentType.includes('application/json'))) {
+        res.setHeader("Access-Control-Allow-Origin", "*")
         let body: RequestQuery = req.body
-        let header = req.headers, query = req.query
-        res.setHeader('just-me', "I love You")
-        res.setHeader("access-control-allow-origin", "*")
-        res.setHeader('content-type', 'application/json')
-        res.json({status: "ok", header, body, query});
-    }else {
-        res.send('')
-    }
-};
-
-/*
-
-const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
-    let body: RequestQuery;
-    const contentType = event.headers['content-type'] ? event.headers['content-type'] : "";
-    if (event.httpMethod.toLowerCase() === "post") {
-        if (contentType.includes('x-www-form-urlencoded')) {
-            body = url.parse(event.body.length > 0 ? "https://www.google.com/?" + event.body : "https://www.google.com/?", true).query
-        } else if (contentType.includes('application/json')) {
-            body = event.body.length > 0 ? JSON.parse(event.body) : {}
-        } else {
-            return {
-                statusCode: 200,
-                body: JSON.stringify({type: "error", msg: 'forbidden'}),
-                headers: {
-                    "access-control-allow-origin": "*",
-                    'content-type': 'application/json'
-                }
-            };
-        }
         const tools = new Tools(body)
         if (body.data) body = JSON.parse(tools.base64Decode(body.data))
         else if (body.raw) body = JSON.parse(tools.base64Decode(body.raw))
 
         if (body.type && body.username && body.nametype && body.userid) {
-            if (body.username.length < 4) {
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify({type: "error", msg: 'Invalid request'}),
-                    headers: {
-                        "access-control-allow-origin": "*",
-                        'content-type': 'application/json',
-                        "Access-Control-Allow-Methods": "*",
-                        "Access-Control-Allow-Headers": "*"
-                    }
-                };
-            }
-            let res = await tools.post_result();
+            if (body.username.length < 4) return res.json({type: "error", msg: 'Invalid request'})
+
+            let resources = await tools.post_result();
             await tools.closeConnection();
 
-            return {
-                statusCode: 200,
-                body: JSON.stringify(res),
-                headers: {
-                    "access-control-allow-origin": "*",
-                    'content-type': 'application/json',
-                    "Access-Control-Allow-Methods": "*",
-                    "Access-Control-Allow-Headers": "*"
-                }
-            };
+            return res.json(resources)
         } else {
-            return {
-                statusCode: 200,
-                body: JSON.stringify({type: "error", msg: 'methods not allowed'}),
-                headers: {
-                    "access-control-allow-origin": "*",
-                    'content-type': 'application/json'
-                }
-            };
+            res.json({type: "error", msg: 'methods not allowed'});
         }
     } else {
-        return {
-            statusCode: 401,
-            body: ""
-        };
+        res.status(401).json({type: "error", msg: 'forbidden'})
     }
-};
-
-
-export {handler};*/
+}
