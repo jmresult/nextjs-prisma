@@ -49,6 +49,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             res.json({type: "error", msg: 'methods not allowed'});
         }
     } else {
-        res.status(401).json({type: "error", msg: 'forbidden'})
+        if (req.method.toUpperCase() === "POST") {
+            res.json({type: "error", msg: 'forbidden'})
+        } else {
+            res.status(401)
+        }
     }
 }
